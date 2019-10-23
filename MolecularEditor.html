@@ -1,0 +1,358 @@
+<html>
+
+<head>
+<script type="text/javascript" language="javascript" src="jsme/jsme.nocache.js"></script>
+
+<script>
+Array.prototype.zeros=function(n){
+   var mat=[];
+   for(var j=0;j<n;j++){
+    var row=[];
+    for(var i=0;i<n;i++){
+      row.push(0);
+    }
+    mat.push(row);
+    }
+    
+    return mat;
+    
+}
+
+    var jmeBase;
+    var jme0="";
+    var jsme2;
+function grupo(nombre,jme){
+    this.nombre=nombre;
+    this.jme=jme;
+}
+var grupos=[];
+function convertJME(cad){
+   var lista=cad.split("\n");
+   for(i=0;i<lista.length;i++){
+      var x=lista[i].split(",");
+      var z=document.createElement("option");
+      z.setAttribute("value",x[1]);
+      var t=document.createTextNode(x[0]);
+      z.appendChild(t);
+      document.getElementById("mySelect").appendChild(z);
+   }
+
+}
+
+function atomo(s,x,y){
+     this.s=s;
+     this.x=x;
+     this.y=y;
+}
+function enlace(n1,n2,tipo){
+    this.n1=n1;
+    this.n2=n2;
+    this.tipo=tipo;
+
+}
+function molecula(data){
+    this.data=data;
+    this.atomos=[];
+    this.enlaces=[];
+    var a=data.split(" ");
+    var natomos=a.shift();
+    var nbonds=a.shift();
+    this.nbonds=nbonds;
+    this.natomos=natomos;
+    for(var i=0;i<natomos;i++){
+       var s=a.shift();
+       var x=parseFloat(a.shift());
+       var y=parseFloat(a.shift());
+       this.atomos.push(new atomo(s,x,y));
+    }
+    
+    for(var i=0;i<nbonds;i++){
+       var n1=parseInt(a.shift());
+       var n2=parseInt(a.shift());
+       var tipo=parseInt(a.shift());
+       this.enlaces.push(new enlace(n1,n2,tipo));
+    }
+  
+    return this;
+
+}
+
+function getText(){
+    // read text from URL location
+    var request = new XMLHttpRequest();
+    request.open('GET', 'https://raw.githubusercontent.com/pgbeermann2017/QM206/master/Grupos.txt', true);
+    request.send(null);
+    request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status === 200) {
+            var type = request.getResponseHeader('Content-Type');
+            if (type.indexOf("text") !== 1) {
+                var data=request.responseText;
+                
+                convertJME(data);
+                
+                return data;
+
+            }
+        }
+    }
+}
+
+function readTextFile(evt)
+{
+   var file=evt.target.files[0];
+   
+   var reader = new FileReader();
+
+   reader.onload=function(thefile){
+        var contents = event.target.result;
+        convertJME(contents);
+
+   };
+
+   reader.readAsText(file);
+
+}
+
+function readGrupos()
+{
+   var file="Grupos.txt";
+   
+   var reader = new FileReader();
+
+   reader.onload=function(thefile){
+        var contents = event.target.result;
+        convertJME(contents);
+
+   };
+
+   reader.readAsText(file);
+
+}
+
+
+    //this function will be called after the JavaScriptApplet code has been loaded.
+function jsmeOnLoad() {
+        jsmeApplet = new JSApplet.JSME("jsme_container", "600px", "480px",{
+                 "options" : "oldlook,star,atommovebutton"
+      
+      }); 
+ 
+
+     //JSApplet.Utils.runAfterBrowserEventLoopReturns(function(){alert("DOM update finished")});
+     //JSApplet.Utils.runAfterFixedDelay(function(){alert("DOM update finished2")},3000);
+     jsmeApplet.setAfterStructureModifiedCallback(showEvent);               
+   
+     jsmeApplet.setCallBack("BondClicked",BC);
+     jsmeApplet.setCallBack("AtomClicked", AC);
+
+     
+}
+
+function BC(event){
+   
+   //var jme=jsmeApplet.smiles();
+   //jsmeApplet.readGenericMolecularInput(jme);
+   console.log(event)
+
+
+}
+
+function AC(event){
+   console.log(event);
+   //var actionMarked = 105;
+   //jsmeApplet.setAction(actionMarked);
+   console.log(event.action);
+   
+
+}
+function check(jsmeEvent,actionMarked){
+      jsmeEvent.src.setAction(actionMarked);
+      
+  }
+function smileToJME2(){
+       jmeBase=jsmeApplet.jmeFile();
+       console.log(jmeBase);
+       var smiles1=jsmeApplet.smiles();
+       jsmeApplet.readGenericMolecularInput(smiles1);
+}
+
+
+
+
+function showEvent(event){
+       jmeBase=jsmeApplet.jmeFile();
+       console.log(jmeBase);
+       var smiles1=jsmeApplet.smiles();
+      
+      
+}
+
+
+
+
+function setTemplate(){
+   var s=document.getElementById("mySelect");
+   var jme=s.value;
+   jsmeApplet.setTemplate(jme);
+
+}
+
+function Seleccionar(event){
+   var s=document.getElementById("mySelect");
+   var jme=s.value;
+   jsmeApplet.setTemplate(jme);
+}
+
+function convertMoleculaToJME(mol){
+    var jme="";
+    jme+=mol.natomos+" "+mol.nbonds+" ";
+    for(i=0;i<mol.natomos;i++){
+       jme+=mol.atomos[i].s+" "+mol.atomos[i].x+" "+mol.atomos[i].y+" ";
+    }
+    for(i=0;i<mol.nbonds;i++){
+       jme+=mol.enlaces[i].n1+" "+mol.enlaces[i].n2+" "+mol.enlaces[i].tipo+" ";
+    }
+    
+  
+    jsmeApplet.readGenericMolecularInput(jme);
+
+}
+
+function getNum(mol){
+    var num=[];
+    for(i=0;i<mol.atomos.length;i++){
+        if(mol.atomos[i].s.includes(":")){
+             mol.atomos[i].s=mol.atomos[i].s.split(":")[0];
+             num.push(i+1);
+         }
+    }
+    return num;
+}
+
+function matConvert(){
+    var mat=[];
+    var elem=[];
+    var jme=jsmeApplet.jmeFile();
+    var mol=new molecula(jme);
+    
+    for(i=0;i<mol.atomos.length;i++){
+       elem.push(mol.atomos[i].s.split(":")[0]);
+    }
+   var na=mol.atomos.length;
+   var mat=mat.zeros(na);
+   for(i=0;i<mol.enlaces.length;i++){
+        var n1=mol.enlaces[i].n1;
+        var n2=mol.enlaces[i].n2;
+        mat[n1-1][n2-1]=mol.enlaces[i].tipo;
+        mat[n2-1][n1-1]=mol.enlaces[i].tipo;
+   }
+
+
+  return mat;
+
+
+
+}
+
+function DH(){
+    var jme=jsmeApplet.jmeFile();
+    var mol=new molecula(jme);
+    var mat=matConvert(mol);
+    console.log(mat);
+    var num=getNum(mol);
+    
+    var na=mol.atomos.length;
+
+    cad="";
+    for(i=0;i<num.length;i++){
+       n=num[i];
+       cad+=mol.atomos[n-1].s;
+        }
+    
+    console.log(num);
+    var nc=cad.indexOf("O");
+    var n1=num[nc]-1;
+    console.log("n1="+n1);
+    var p=mat[n1].slice(0);
+    var n2=p.indexOf(1);
+    console.log("n2="+n2);
+    nc=num.indexOf(n1+1);
+    num.splice(nc,1);
+    nc=num.indexOf(n2+1);
+    num.splice(nc,1);
+    var n3=num[0]-1;
+    console.log("n3="+n3);
+    
+
+    
+ convertMoleculaToJME(mol);
+
+}
+
+function delItem(){
+     var x=[1,2,3,4,5,6];
+     console.log(x);
+     console.log(x.splice(1,1));
+     console.log(x);
+
+}
+
+function KR(){
+    var jme=jsmeApplet.jmeFile();
+    var mol=new molecula(jme);
+    var num=getNum(mol);
+ 
+    var n1=num[0];
+    var n2=num[1];
+    
+    for(i=0;i<mol.enlaces.length;i++){
+        
+         if(n1==mol.enlaces[i].n1 && n2==mol.enlaces[i].n2 && mol.enlaces[i].tipo>1){
+             mol.enlaces[i].tipo--;
+            
+         }
+         if(n1==mol.enlaces[i].n2 && n2==mol.enlaces[i].n1 && mol.enlaces[i].tipo>1){
+              mol.enlaces[i].tipo--;
+              
+         }
+
+     }
+    convertMoleculaToJME(mol);
+}   
+</script>
+</head>
+
+<body>
+<button type="button" onclick="smileToJME2();">Optimizar</button>
+<button type="button" onclick="getText();">Nuevo Grupo</button>
+<button type="button" onclick="setTemplate();">setTemplate</button>
+<table>
+<tr>
+<td>
+<div id="jsme_container"></div>
+<select id="mySelect" style="width:400px;" onchange="Seleccionar();">
+</select>
+</td>
+<td>
+<button type="button" onclick="KR();">KR</button><br>
+<button type="button" onclick="DH();">DH</button><br>
+
+
+
+</td>
+</tr>
+</table>
+<br>
+<input type="file" id="file1" name="files[]" multiple /><br>
+
+
+<script>
+
+link1="http://www3.uah.es/biomodel/en/DIY/JSME/draw.es.htm";
+link2="https://raw.githubusercontent.com/pgbeermann2017/QM206/master/Grupos.txt";
+document.getElementById('file1').addEventListener('change', readTextFile, false);
+getText();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,492 @@
+<html>
+
+<head>
+<script type="text/javascript" language="javascript" src="jsme/jsme.nocache.js"></script>
+<script type="text/javascript" language="javascript" src="jsme/funciones.js"></script>
+
+<script>
+
+
+    var jmeBase;
+    var jme0="";
+    var jsme2;
+    var appAction=105;
+    var op=true;
+    var atomRX=[];
+    var img1=new Image();
+    var imgWidth=500;
+    var imgHeight=480;
+class Atomo{
+
+   constructor(a,b){
+      this.a=a;
+      this.b=b;
+   }
+   makeAtomo(){
+      this.a=1;
+    }
+
+}    
+
+var s=new Atomo(1,2);
+console.log(s);
+
+function grupo(nombre,jme){
+    this.nombre=nombre;
+    this.jme=jme;
+}
+var grupos=[];
+
+
+
+    //this function will be called after the JavaScriptApplet code has been loaded.
+function jsmeOnLoad() {
+        jsmeApplet = new JSApplet.JSME("jsme_container", "600px", "480px",{
+                 "options" : "oldlook,star,atommovebutton"
+      
+      }); 
+ 
+
+     //JSApplet.Utils.runAfterBrowserEventLoopReturns(function(){alert("DOM update finished")});
+     //JSApplet.Utils.runAfterFixedDelay(function(){alert("DOM update finished2")},3000);
+
+     jsmeApplet.setAfterStructureModifiedCallback(showEvent);               
+   
+     //jsmeApplet.setCallBack("BondClicked",BC);
+     //jsmeApplet.setCallBack("AtomClicked", AC);
+     //jsmeApplet.setCallBack("BondHighlight",BH);
+
+     var jme="6 6 C 14.36 -8.97 C 14.80 -7.64 C 13.66 -6.82 C 12.53 -7.64 C 12.96 -8.97 O 13.66 -5.42 1 2 1 2 3 1 3 4 1 4 5 1 5 1 1 3 6 1";
+     jsmeApplet.readGenericMolecularInput(jme);
+     
+     
+      ciclo();
+}
+function BH(event){
+   console.log(event.bond);
+}
+function myClick(jsme, evt) {
+    console.log(jsme);
+    jsme.setAction(202);
+ }
+
+function Action2(){
+ 
+   console.log(jsmeApplet.g.d);
+   var element = document.getElementById('jsme');
+   jsmeApplet.setAtomToHighLight(1,1);
+   jsmeApplet.setAction(202);
+   
+   element.click();
+   console.log(element.src);
+
+}
+function Action3(){
+      jme=jsmeApplet.jmeFile();
+      console.log(jme);
+      jsmeApplet.setAtomToHighLight(1,1);
+      jsmeApplet.setAction(202);
+      jsmeApplet.g.Hg();
+      console.log(jsmeApplet.g);
+}
+
+function Action(){
+   
+   jsmeApplet.setAtomToHighLight(1,1);
+   jsmeApplet.setAction(202);
+   console.log(jsmeApplet);
+   atColorCsv="1,2,2,2,3,2,6,1";
+   jsmeApplet.setAtomBackgroundColors(1, atColorCsv);
+   //document.JME=jsmeApplet;
+   //var elem=document.JME;
+   //elem.click();
+   var c = document.getElementById("jsme_container").childNodes[0].childNodes[1].childNodes[1];
+   //c.setAttribute("id","canvas");
+   var c=jsmeApplet.g.d.jb.pb.childNodes[1].childNodes[0];
+   var xmlns = "http://www.w3.org/2000/svg";
+   var g=document.createElementNS(xmlns, "g");
+   var line1=document.createElementNS(xmlns, "line");
+   line1.setAttribute("x1","7260");
+   line1.setAttribute("y1","5040");
+   line1.setAttribute("x2","7909");
+   line1.setAttribute("y2","5415");
+   line1.setAttribute("stroke","black");
+   line1.setAttribute("strokewidth","1");
+   c.appendChild(g)
+   g.appendChild(line1);
+   console.log("CANVAS");
+   console.log(c);
+  
+   
+ 
+  
+
+    
+
+   
+}
+function BC(event){
+ 
+}
+
+function BC2(event){
+  
+   
+   console.log(event.bond);
+   console.log(event.src.g.b.k);
+   var nb=event.bond;
+   var jme=jsmeApplet.jmeFile();
+   var mol=new molecula(jme);
+   var n1=mol.enlaces[nb-1].n1;
+   var n2=mol.enlaces[nb-1].n2;
+  
+   var nOH=buscaOH(mol,n1,n2);
+ 
+   if(nOH>=0){
+      mol.enlaces[nb-1].tipo=2;
+      mol.atomos[nOH].s="H";
+   }
+   convertMoleculaToJME(mol);
+   
+
+ 
+}
+
+function myEvent1(event){
+    console.log("Evento1");
+    console.log(event.src.g.b);
+
+}
+function myEvent2(event){
+    console.log("Evento2");
+    console.log(event.src.g.b);
+    event.src.setAction(202);
+    op=true;
+}
+
+function AC(event){
+   console.log("AC");
+   console.log(event);
+   //console.log(event.atom);
+   console.log(event.src.g.d.jb.pb);
+   var n=event.atom;
+ 
+
+
+   
+   
+   
+
+}
+
+
+
+
+function showEvent(event){
+       jmeBase=jsmeApplet.jmeFile();
+       
+       var smiles1=jsmeApplet.smiles();
+       document.getElementById("txt1").value=smiles1;
+       console.log(event.atom);
+       console.log(event.bond);
+       console.log(event.src.g.b.k);
+      
+      
+}
+
+function grupoSaliente(){
+  var jme=jsmeApplet.jmeFile();
+  var mol=new molecula(jme);
+  eliminaElementos(mol);
+  
+ 
+ 
+  convertMoleculaToJME(mol);
+  
+}
+
+function OX(){
+   var jme=jsmeApplet.jmeFile();
+   mol=new molecula(jme);
+   var nC=-1;
+   var nO=0;
+   for(i=0;i<mol.natomos;i++){
+       var v=mol.atomos[i].s.split(":");
+       if(v.length>1  && v[0]=="C"){
+          mol.atomos[i].s=v[0];
+          nC=i+1;
+       }
+
+    }
+    var ne=0;
+    var nO=0;
+    console.log(nC);
+    for(i=0;i<mol.enlaces.length;i++){
+        var n1=mol.enlaces[i].n1;
+        var n2=mol.enlaces[i].n2;
+        console.log(n1+" "+n2);
+        if(n1==nC  && mol.atomos[n2-1].s=="O" ){
+             nO++;
+          }
+        if(n2==nC  && mol.atomos[n1-1].s=="O" ){
+             nO++;
+          }
+         if(n2==nC  || n1==nC){
+              ne+=mol.enlaces[i].tipo;
+          }
+
+
+    }
+    console.log("Enlaces");
+    console.log(nO+" "+ne);
+    var ind=[];
+    for(i=0;i<mol.enlaces.length;i++){
+        var n1=mol.enlaces[i].n1;
+        var n2=mol.enlaces[i].n2;
+        if(n1==nC && mol.atomos[n2-1].s=="O" && mol.enlaces[i].tipo==1){
+             mol.enlaces[i].tipo=2;    
+         }
+
+    }
+   convertMoleculaToJME(mol);
+}
+
+function KR(){
+  jsmeApplet.alert("Keto reductase");
+  var jme=jsmeApplet.jmeFile();
+  var mol=new molecula(jme);
+  var atomRX=[];
+  var nOH=-1;
+  for(var i=0;i<mol.natomos;i++){
+     var v=mol.atomos[i].s.split(":");
+     if(v.length>1){
+        mol.atomos[i].s=v[0];
+        if(v[0]=="O"){
+           nOH=i+1;
+        }else{
+          atomRX.push(i+1);
+         }
+     }
+
+  }
+  
+    if(nOH>0 && atomRX.length==1){
+      var n=buscaEnlace(mol,nOH,atomRX[0]);
+      mol.enlaces[n].tipo=1;
+      convertMoleculaToJME(mol);
+     }
+   
+    img1.src="RX24.png";
+}
+
+
+
+function DH(){
+  jsmeApplet.alert("Dehydratase");
+  var jme=jsmeApplet.jmeFile();
+  var mol=new molecula(jme);
+  var mat=matConvert(mol);
+  var atomRX=[];
+  var nOH=-1;
+  for(var i=0;i<mol.natomos;i++){
+     var v=mol.atomos[i].s.split(":");
+     if(v.length>1){
+        mol.atomos[i].s=v[0];
+        if(v[0]=="O"){
+           nOH=i+1;
+        }else{
+          atomRX.push(i+1);
+         }
+     }
+
+  }
+ 
+  
+  if(nOH>0 && atomRX.length==2){
+      var n=buscaEnlace(mol,atomRX[0],atomRX[1]);
+      mol.enlaces[n].tipo=2;
+      eliminaElemento(mol,nOH);
+      
+      convertMoleculaToJME(mol);
+   }
+
+
+
+
+}
+
+function ER(){
+
+  var jme=jsmeApplet.jmeFile();
+  var mol=new molecula(jme);
+  var mat=matConvert(mol);
+  var atomRX=[];
+  var nOH=-1;
+  for(var i=0;i<mol.natomos;i++){
+     var v=mol.atomos[i].s.split(":");
+     if(v.length>1){
+        mol.atomos[i].s=v[0];
+        if(v[0]=="O"){
+           nOH=i+1;
+        }else{
+          atomRX.push(i+1);
+         }
+     }
+
+  }
+ 
+  
+  if(nOH>0 && atomRX.length==2){
+      var n1=atomRX[0];
+      var n2=atomRX[1];
+      var n=buscaEnlace(mol,nOH,n1);
+      
+      if(n>0){
+         mol.enlaces[n].tipo=1;
+      }
+      var n=buscaEnlace(mol,nOH,n2);
+      
+      if(n>0){
+         mol.enlaces[n].tipo=1;
+      }
+
+      var n=buscaEnlace(mol,n1,n2);
+      
+      mol.enlaces[n].tipo=2;
+      
+      //eliminaElemento(mol,nOH);
+      convertMoleculaToJME(mol);
+   }
+
+
+  
+   
+
+}
+
+function CY(){
+
+  var jme=jsmeApplet.jmeFile();
+  var mol=new molecula(jme);
+  var mat=matConvert(mol);
+  var atomRX=[];
+  var nOH=-1;
+  for(var i=0;i<mol.natomos;i++){
+     var v=mol.atomos[i].s.split(":");
+     if(v.length>1){
+        mol.atomos[i].s=v[0];
+        if(v[0]=="O"){
+           nOH=i+1;
+        }else{
+          atomRX.push(i+1);
+         }
+     }
+
+  }
+  
+  
+  if(nOH>0 && atomRX.length==2){
+      var n1=atomRX[0];
+      var n2=atomRX[1];
+      var n=buscaEnlace(mol,nOH,n1);
+     
+      if(n>0){
+         mol.enlaces[n].tipo=1;
+      }
+      var n=buscaEnlace(mol,nOH,n2);
+      
+      if(n>0){
+         mol.enlaces[n].tipo=1;
+      }
+      mol.enlaces.push(new enlace(n1,n2,1));
+ 
+      mol.nbonds=mol.enlaces.length;
+      
+      convertMoleculaToJME(mol);
+   }
+
+
+  
+  
+
+}
+
+function myFunction(evt){
+    console.log("EVENT");
+    console.log(evt.srcElement);
+
+}
+
+
+</script>
+</head>
+
+<body>
+<button id="opt" type="button" onclick="smileToJME2();">Optimizar</button>
+<button type="button" onclick="getText();">Nuevo Grupo</button>
+<button type="button" onclick="setTemplate();">setTemplate</button>
+<table>
+<tr>
+<td>
+
+
+<div id="jsme_container"  ></div>
+
+
+
+</td>
+<td style="background:#FFFF00;">
+<button type="button" style="width:150px;" onclick="grupoSaliente();">Grupo Saliente</button><br>
+<button type="button" style="width:150px;" onclick="KR();">KR</button><br>
+<button type="button" style="width:150px;" onclick="DH();">DH</button><br>
+<input type="text" value=0 id="txt1"><br>
+<button type="button" style="width:150px;" onclick="ER();">ER</button><br>
+<button type="button" style="width:150px;" onclick="CY();">CY</button><br>
+<button type="button" style="width:150px;" onclick="BV();">Baeyer-Villiger Ox</button><br>
+<button type="button" style="width:150px;" onclick="OX();">OX</button><br>
+<button type="button" style="width:150px;" onclick="Action3();">Action</button><br>
+
+</td>
+<td>
+<canvas id="canvas1" width="500" height="480" style="background:#000000;"></canvas>
+</td>
+</tr>
+</table>
+<br>
+<select id="mySelect" style="width:400px;" onchange="Seleccionar();">
+</select>
+<input type="file" id="file1" name="files[]" multiple /><br>
+<div id="div1" >HELLO</div>
+<input type="text" value=0 id="txt1"><br>
+<script>
+var c = document.getElementById("canvas1");
+var ctx = c.getContext("2d");
+
+
+link1="http://www3.uah.es/biomodel/en/DIY/JSME/draw.es.htm";
+link2="https://raw.githubusercontent.com/pgbeermann2017/QM206/master/Grupos.txt";
+document.getElementById('file1').addEventListener('change', readTextFile, false);
+getText();
+
+function ciclo(){
+ document.getElementById("txt1").value=jsmeApplet.g.b.k;
+ var h=500*img1.height/img1.width;
+ ctx.height=h;
+ ctx.drawImage(img1,0,0,500,h);
+ requestAnimationFrame(ciclo);
+  
+}
+//document.getElementById("jsme").addEventListener("mousedown",myFunction);
+
+
+
+</script>
+
+<div>
+C1=CC(=CC=C1/C=C/C2=CC(=CC(=C2)O)O)O   revestarol<br>
+COC1=C2C3=C(C(=O)OCC3)C(=O)OC2=C4C5C=COC5OC4=C1  aflatoxin<br>
+C([C@H]([C@H](C=O)O)O)OP(=O)(O)O  eritrosa-4-OP<br>
+</div>
+
+</body>
+</html>
